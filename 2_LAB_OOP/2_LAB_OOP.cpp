@@ -44,6 +44,37 @@ void Line::move(int dx1, int dy1, int dx2, int dy2) {
     this->y2 += dy2;
 };
 
+class BrokenLine : public Line {
+protected:
+    int crack_x, crack_y;
+public:
+    void display() {
+        printf("BrokenLine(дочерний) Ломано в %d %d\n ", crack_x, crack_y);
+    }
+    BrokenLine() : Line() {
+        printf("------Конструктор BrokenLine без операторов\n");
+        crack_x = 0;
+        crack_y = 0;
+    }
+    BrokenLine(int x1, int y1, int x2, int y2, int crack_x, int crack_y) : Line(x1, y1, x2, y2) {
+        printf("------Конструктор BrokenLine с операторами\n");
+        this->crack_x = crack_x;
+        this->crack_y = crack_y;
+    }
+    BrokenLine(const BrokenLine& l) {
+        printf("------Конструктор BrokenLine копирования\n");
+        this->x1 = l.x1 + 1;
+        this->y1 = l.y1;
+        this->x2 = l.x2;
+        this->y2 = l.y2;
+        this->crack_x = l.crack_x;
+        this->crack_y = l.crack_y;
+    }
+    ~BrokenLine() {
+        display();
+        printf("~~~~~~Деструктор BrokenLine\n\n");
+    }
+};
 
 
 int main() {
@@ -68,5 +99,25 @@ int main() {
         delete l3;
     }
 
-    
+    {
+        printf("\n=== 3) Динамический BrokenLine ===\n");
+        printf("[Создание] Сначала конструктор базового Line, потом BrokenLine.\n");
+        BrokenLine* bl = new BrokenLine(1, 2, 3, 4, 2, 3);
+        delete bl;
+    }
+
+    {
+        printf("\n=== 4) Присвоение статически созданного BrokenLine в Line ===\n");
+        printf("[Создание] В объект Line копируется только базовая часть BrokenLine.\n");
+        Line l = BrokenLine();
+        l.display();
+    }
+
+    {
+        printf("\n=== 5) Присвоение динамически созданного BrokenLine в Line с виртуальным деструктором ===\n");
+        printf("[Создание] Указатель Line* хранит объект BrokenLine.\n");
+        Line* l = new BrokenLine(1, 2, 3, 4, 2, 3);
+        l->display();
+        delete l;
+    }
 }
