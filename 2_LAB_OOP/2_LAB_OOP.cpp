@@ -76,6 +76,32 @@ public:
     }
 };
 
+class Shape {
+public:
+    Line l1, l2;
+    void display() {
+        l1.display();
+        l2.display();
+    }
+    Shape() {
+        printf("---------Конструктор Shape без операторов\n");
+    }
+    Shape(Line* l1, Line* l2) {
+        printf("---------Конструктор Shape с операторами\n");
+        this->l1 = *l1;
+        this->l2 = *l2;
+    }
+    Shape(const Shape& s) {
+        printf("---------Конструктор Shape копирования\n");
+        l1 = *new Line(s.l1);
+        l2 = *new Line(s.l2);
+    }
+    virtual ~Shape() {
+        // delete l1;
+        // delete l2;
+        printf("~~~~~~~~~Деструктор Shape\n\n");
+    }
+};
 
 int main() {
     setlocale(LC_ALL, "ru");
@@ -119,5 +145,34 @@ int main() {
         Line* l = new BrokenLine(1, 2, 3, 4, 2, 3);
         l->display();
         delete l;
+    }
+
+    {
+        printf("\n=== 6) Композиция: Shape с указателями ===\n");
+        printf("[Создание] Shape создает Line внутри конструктора через new.\n");
+        struct ShapeWithPointers {
+            Line* l1;
+            Line* l2;
+
+            ShapeWithPointers() {
+                printf("---------Конструктор Shape без операторов\n");
+                l1 = new Line();
+                l2 = new Line();
+            }
+
+            ~ShapeWithPointers() {
+                delete l1;
+                delete l2;
+                printf("~~~~~~~~~Деструктор Shape\n\n");
+            }
+        };
+
+        ShapeWithPointers s;
+    }
+
+    {
+        printf("\n=== 7) Композиция: Shape с объектами ===\n");
+        printf("[Создание] Поля Line создаются до тела конструктора Shape.\n");
+        Shape s;
     }
 }
